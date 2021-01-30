@@ -3,6 +3,8 @@ import gallery__items from './gallery-items.js';
 
 const refs = {
   gallery: document.querySelector('.js-gallery'),
+  formModal: document.querySelector('.lightbox'),
+  eachImage: document.querySelector('.lightbox__image'),
 };
 
 function createGallery(items) {
@@ -32,11 +34,21 @@ refs.gallery.insertAdjacentHTML('beforeend', galleryList);
 
 // Реализация делегирования на галерее ul.js-gallery
 //  и получение url большого изображения.
-refs.gallery.addEventListener('click', onImageClick);
+
 function onImageClick(event) {
   event.preventDefault();
-  console.log(event.target);
-  // if(event.target){
+  if (event.target.nodeName !== 'IMG') {
+    return;
+  }
+  const largeImage = event.target.dataset.source;
+  const descriptionImage = event.target.alt;
+  const dataIndex = event.target.dataset.index;
 
-  // }
+  refs.eachImage.setAttribute('src', largeImage);
+  refs.eachImage.setAttribute('alt', descriptionImage);
+  refs.eachImage.setAttribute('data-index', dataIndex);
+  refs.formModal.classList.add('is-open');
 }
+refs.gallery.addEventListener('click', onImageClick);
+
+
