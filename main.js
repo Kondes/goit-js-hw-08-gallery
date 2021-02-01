@@ -1,11 +1,19 @@
-// Создание и рендер разметки по массиву данных и предоставленному шаблону.
 import gallery__items from './gallery-items.js';
 
 const refs = {
   gallery: document.querySelector('.js-gallery'),
   formModal: document.querySelector('.lightbox'),
   eachImage: document.querySelector('.lightbox__image'),
+  closeBtn: document.querySelector('.lightbox__button'),
+  backdropRef: document.querySelector('.lightbox__overlay'),
 };
+
+const galleryList = createGallery(gallery__items);
+
+refs.gallery.insertAdjacentHTML('beforeend', galleryList);
+refs.gallery.addEventListener('click', openModal);
+refs.closeBtn.addEventListener('click', closeModal);
+refs.backdropRef.addEventListener('click', onBackdropClose);
 
 function createGallery(items) {
   return items
@@ -28,15 +36,9 @@ function createGallery(items) {
     .join('');
 }
 
-const galleryList = createGallery(gallery__items);
-
-refs.gallery.insertAdjacentHTML('beforeend', galleryList);
-
-// Реализация делегирования на галерее ul.js-gallery
-//  и получение url большого изображения.
-
-function onImageClick(event) {
+function openModal(event) {
   event.preventDefault();
+
   if (event.target.nodeName !== 'IMG') {
     return;
   }
@@ -49,6 +51,25 @@ function onImageClick(event) {
   refs.eachImage.setAttribute('data-index', dataIndex);
   refs.formModal.classList.add('is-open');
 }
-refs.gallery.addEventListener('click', onImageClick);
 
+function closeModal(event) {
+  event.preventDefault();
+  window.addEventListener('keydown', event => {
+    if (event.code === 'Escape') {
+      closeModal(event);
+    }
+  });
 
+  const newAttribute = '';
+
+  refs.eachImage.setAttribute('src', newAttribute);
+  refs.eachImage.setAttribute('alt', newAttribute);
+  refs.eachImage.setAttribute('data-index', newAttribute);
+  refs.formModal.classList.remove('is-open');
+}
+
+function onBackdropClose(event) {
+  if (event.target === event.currentTarget) {
+    closeModal(event);
+  }
+}
