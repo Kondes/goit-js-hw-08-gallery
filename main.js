@@ -13,7 +13,6 @@ const galleryList = createGallery(gallery__items);
 refs.gallery.insertAdjacentHTML('beforeend', galleryList);
 refs.gallery.addEventListener('click', openModal);
 refs.closeBtn.addEventListener('click', closeModal);
-refs.backdropRef.addEventListener('click', onBackdropClose);
 
 function createGallery(items) {
   return items
@@ -39,9 +38,22 @@ function createGallery(items) {
 function openModal(event) {
   event.preventDefault();
 
+  window.addEventListener('keydown', event => {
+    if (event.code === 'Escape') {
+      closeModal(event);
+    }
+  });
+
+  function onBackdropClose(event) {
+    if (event.target === event.currentTarget) {
+      closeModal(event);
+    }
+  }
+
   if (event.target.nodeName !== 'IMG') {
     return;
   }
+
   const largeImage = event.target.dataset.source;
   const descriptionImage = event.target.alt;
   const dataIndex = event.target.dataset.index;
@@ -50,15 +62,11 @@ function openModal(event) {
   refs.eachImage.setAttribute('alt', descriptionImage);
   refs.eachImage.setAttribute('data-index', dataIndex);
   refs.formModal.classList.add('is-open');
+  refs.backdropRef.addEventListener('click', onBackdropClose);
 }
 
 function closeModal(event) {
   event.preventDefault();
-  window.addEventListener('keydown', event => {
-    if (event.code === 'Escape') {
-      closeModal(event);
-    }
-  });
 
   const newAttribute = '';
 
@@ -66,10 +74,4 @@ function closeModal(event) {
   refs.eachImage.setAttribute('alt', newAttribute);
   refs.eachImage.setAttribute('data-index', newAttribute);
   refs.formModal.classList.remove('is-open');
-}
-
-function onBackdropClose(event) {
-  if (event.target === event.currentTarget) {
-    closeModal(event);
-  }
 }
